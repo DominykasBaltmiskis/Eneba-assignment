@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Routes, Route, NavLink, useLocation, useNavigate } from "react-router-dom";
 import "./App.css";
 
@@ -16,13 +16,23 @@ function Header({ value, onChange, onSubmit }) {
         <div className="logo">eneba</div>
 
         <form className="searchWrap" onSubmit={onSubmit}>
-          <span className="searchIcon" aria-hidden="true">🔍</span>
+          <button
+            type="submit"
+            className="searchSubmit"
+            aria-label="Search"
+            title="Search"
+          >
+            🔍
+          </button>
+
           <input
             className="search"
+            type="search"
             placeholder="Search games..."
             value={value}
             onChange={(e) => onChange(e.target.value)}
           />
+
           {value?.length > 0 && (
             <button
               type="button"
@@ -45,9 +55,9 @@ function Header({ value, onChange, onSubmit }) {
             Games
           </NavLink>
 
-          <button className="iconBtn" title="Wishlist">♡</button>
-          <button className="iconBtn" title="Cart">🛒</button>
-          <button className="iconBtn" title="Account">👤</button>
+          <button type="button" className="iconBtn" title="Wishlist">♡</button>
+          <button type="button" className="iconBtn" title="Cart">🛒</button>
+          <button type="button" className="iconBtn" title="Account">👤</button>
         </div>
       </div>
     </div>
@@ -56,17 +66,30 @@ function Header({ value, onChange, onSubmit }) {
 
 function HomePage({ searchValue, setSearchValue }) {
   const nav = useNavigate();
+  const typeTimer = useRef(null);
+
+  // ✅ LIVE SEARCH: typing on Home auto-jumps to /games?search=...
+  const onType = (v) => {
+    setSearchValue(v);
+
+    window.clearTimeout(typeTimer.current);
+    typeTimer.current = window.setTimeout(() => {
+      const q = (v || "").trim();
+      if (q.length > 0) {
+        nav(`/games?search=${encodeURIComponent(q)}`, { replace: true });
+      }
+    }, 250);
+  };
 
   const onSubmit = (e) => {
     e.preventDefault();
     const q = (searchValue || "").trim();
-    // ✅ FIX: Home search must navigate to Games with query
     nav(q ? `/games?search=${encodeURIComponent(q)}` : "/games");
   };
 
   return (
     <div className="app">
-      <Header value={searchValue} onChange={setSearchValue} onSubmit={onSubmit} />
+      <Header value={searchValue} onChange={onType} onSubmit={onSubmit} />
 
       <div className="container">
         <div className="welcomeCard">
@@ -75,14 +98,12 @@ function HomePage({ searchValue, setSearchValue }) {
             Use the search bar to find games, or open the Games page.
           </p>
 
-          {/* ✅ PATCH: Replace old welcome image with the new one + rounded + shadow */}
           <img
             className="welcomeImg"
             alt="Elden Ring Shadow of the Erdtree"
             src="https://p325k7wa.twic.pics/high/elden-ring/elden-ring/08-shadow-of-the-erdtree/elden-ring-expansion-SOTE/00-page-content/ERSOTE-header-mobile.jpg?twic=v1/resize=760/step=10/quality=80"
           />
 
-          {/* space for upcoming CV */}
           <div className="welcomeSpace">
             <div className="spaceHint">CV content coming here…</div>
           </div>
@@ -95,6 +116,7 @@ function HomePage({ searchValue, setSearchValue }) {
 function GamesPage({ searchValue, setSearchValue }) {
   const q = useQuery();
   const nav = useNavigate();
+  const typeTimer = useRef(null);
 
   const [count, setCount] = useState(0);
   const [items, setItems] = useState([]);
@@ -132,16 +154,26 @@ function GamesPage({ searchValue, setSearchValue }) {
     fetchGames();
   }, [q]);
 
+  // ✅ LIVE SEARCH: update URL while typing (debounced)
+  const onType = (v) => {
+    setSearchValue(v);
+
+    window.clearTimeout(typeTimer.current);
+    typeTimer.current = window.setTimeout(() => {
+      const term = (v || "").trim();
+      nav(term ? `/games?search=${encodeURIComponent(term)}` : "/games", { replace: true });
+    }, 250);
+  };
+
   const onSubmit = (e) => {
     e.preventDefault();
     const term = (searchValue || "").trim();
-    // ✅ FIX: Games search updates URL -> triggers fetch
     nav(term ? `/games?search=${encodeURIComponent(term)}` : "/games");
   };
 
   return (
     <div className="app">
-      <Header value={searchValue} onChange={setSearchValue} onSubmit={onSubmit} />
+      <Header value={searchValue} onChange={onType} onSubmit={onSubmit} />
 
       <div className="container">
         <div className="results">Results found: {loading ? "…" : count}</div>

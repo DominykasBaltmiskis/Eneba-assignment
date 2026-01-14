@@ -127,6 +127,23 @@ body {
 .iconBtn:hover {
   background: rgba(255,255,255,0.12);
 }
+/* ✅ SEARCH FIX: clickable magnifier submit button */
+.searchSubmit {
+  border: 0;
+  background: transparent;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+  opacity: 0.9;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.searchSubmit:hover {
+  opacity: 1;
+}
 
 .container {
   width: min(1200px, calc(100% - 44px));
