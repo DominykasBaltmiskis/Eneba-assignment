@@ -21,7 +21,8 @@ cd Eneba-assignment
 
 Start the backend server:
 
-cd backend
+cd ~/eneba-assignment/backend
+rm -f games.db
 npm install
 npm run start
 
