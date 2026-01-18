@@ -49,12 +49,9 @@ Open this URL in your browser to use the application.
 - Search works on both Home and Games pages
 - Backend-powered search using /list?search=
 - Eneba-style UI
-- CV section displayed on the Home page
 
 ---
 
 ## Author
 
 Dominykas Baltmiškis  
-Kaunas, Lithuania  
-Email: dominykasbaltmiskis@gmail.com
