@@ -1,7 +1,5 @@
 # Eneba Assignment – Full Stack Web Application
 
-This repository contains a full-stack web application created for the Eneba internship assignment.
-
 The project uses a React frontend, a Node.js backend, an SQL database, and implements a live search feature matching the provided Eneba design.
 
 Included content:
