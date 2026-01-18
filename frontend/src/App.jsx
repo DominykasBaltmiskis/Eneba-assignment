@@ -1,8 +1,72 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Routes, Route, NavLink, useLocation, useNavigate } from "react-router-dom";
 import "./App.css";
 
 const API_BASE = "http://localhost:3001";
+
+/** CV DATA (from your Resume doc) */
+const CV = {
+  name: "Dominykas Baltmiškis",
+  contact: "Kaunas, Lithuania | +370 699 83104 | dominykasbaltmiskis@gmail.com",
+  experience: [
+    {
+      role: "ESO – Electrical Network Development Engineer",
+      period: "2023 – Present",
+      bullets: [
+        "Performed power grid analysis and proposed efficient electrical network solutions",
+        "Contributed to long-term infrastructure planning and development initiatives",
+      ],
+    },
+    {
+      role: "Hollister – Controls Engineer",
+      period: "2023",
+      bullets: [
+        "Programmed PLC controllers and configured servo drives",
+        "Integrated new components into existing systems for process improvement",
+      ],
+    },
+    {
+      role: "Hollister – Maintenance Technician",
+      period: "2022 – 2023",
+      bullets: [
+        "Maintained and optimized industrial equipment performance",
+        "Diagnosed and resolved electrical and mechanical issues",
+      ],
+    },
+    {
+      role: "Tic-elkas – Electrical Cabinet Assembler",
+      period: "2022",
+      bullets: [
+        "Assembled and wired electrical control panels",
+        "Connected controllers and ensured safe circuit configurations",
+      ],
+    },
+  ],
+  education: [
+    {
+      title: "CodeAcademy – Cybersecurity Specialist Program",
+      period: "2025",
+      sub: "Coursework: Threat Intelligence, APT Analysis, Ethical Hacking Technologies",
+    },
+    {
+      title: "Kauno Kolegija – Bachelor of Professional Studies: Automation & Robotics Engineering",
+      period: "2020 – 2023",
+      sub: "",
+    },
+  ],
+  certifications: [
+    {
+      title: "Cybersecurity Program – CodeAcademy",
+      sub: "504 hours – Focus on threat detection, cyber defense strategies, and ethical hacking (Expected: 2025)",
+    },
+  ],
+  skills: [
+    "TIA Portal, Autodesk Inventor, AutoCAD, Microsoft Office, Splan 7.0, Visual Studio, Cisco Packet Tracer",
+    "C++",
+    "PLC programming, servo drive configuration, electrical schematics, equipment maintenance, industrial automation",
+    "Lithuanian (native), English (fluent)",
+  ],
+};
 
 function useQuery() {
   const { search } = useLocation();
@@ -16,21 +80,14 @@ function Header({ value, onChange, onSubmit }) {
         <div className="logo">eneba</div>
 
         <form className="searchWrap" onSubmit={onSubmit}>
-          <button
-            type="submit"
-            className="searchSubmit"
-            aria-label="Search"
-            title="Search"
-          >
-            🔍
-          </button>
+          <span className="searchIcon" aria-hidden="true">🔍</span>
 
           <input
             className="search"
-            type="search"
             placeholder="Search games..."
             value={value}
             onChange={(e) => onChange(e.target.value)}
+            autoComplete="off"
           />
 
           {value?.length > 0 && (
@@ -43,6 +100,9 @@ function Header({ value, onChange, onSubmit }) {
               ✕
             </button>
           )}
+
+          {/* keeps Enter working even if browser is weird */}
+          <button type="submit" style={{ display: "none" }} aria-hidden="true" />
         </form>
 
         <div className="headerRight">
@@ -55,10 +115,72 @@ function Header({ value, onChange, onSubmit }) {
             Games
           </NavLink>
 
-          <button type="button" className="iconBtn" title="Wishlist">♡</button>
-          <button type="button" className="iconBtn" title="Cart">🛒</button>
-          <button type="button" className="iconBtn" title="Account">👤</button>
+          <button className="iconBtn" title="Wishlist">♡</button>
+          <button className="iconBtn" title="Cart">🛒</button>
+          <button className="iconBtn" title="Account">👤</button>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function CVBlock() {
+  return (
+    <div className="cvCard">
+      <div className="cvTop">
+        <div>
+          <div className="cvName">{CV.name}</div>
+          <div className="cvContact">{CV.contact}</div>
+        </div>
+      </div>
+
+      <div className="cvSection">
+        <div className="cvH">Professional Experience</div>
+        {CV.experience.map((x, idx) => (
+          <div className="cvItem" key={idx}>
+            <div className="cvItemTop">
+              <div className="cvRole">{x.role}</div>
+              <div className="cvPeriod">{x.period}</div>
+            </div>
+            <ul className="cvList">
+              {x.bullets.map((b, i) => (
+                <li key={i}>{b}</li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+
+      <div className="cvSection">
+        <div className="cvH">Education</div>
+        {CV.education.map((x, idx) => (
+          <div className="cvItem" key={idx}>
+            <div className="cvItemTop">
+              <div className="cvRole">{x.title}</div>
+              <div className="cvPeriod">{x.period}</div>
+            </div>
+            {x.sub ? <div className="cvSub">{x.sub}</div> : null}
+          </div>
+        ))}
+      </div>
+
+      <div className="cvSection">
+        <div className="cvH">Certifications & Courses</div>
+        {CV.certifications.map((x, idx) => (
+          <div className="cvItem" key={idx}>
+            <div className="cvRole">{x.title}</div>
+            <div className="cvSub">{x.sub}</div>
+          </div>
+        ))}
+      </div>
+
+      <div className="cvSection">
+        <div className="cvH">Skills</div>
+        <ul className="cvList">
+          {CV.skills.map((s, i) => (
+            <li key={i}>{s}</li>
+          ))}
+        </ul>
       </div>
     </div>
   );
@@ -66,20 +188,17 @@ function Header({ value, onChange, onSubmit }) {
 
 function HomePage({ searchValue, setSearchValue }) {
   const nav = useNavigate();
-  const typeTimer = useRef(null);
 
-  // ✅ LIVE SEARCH: typing on Home auto-jumps to /games?search=...
-  const onType = (v) => {
-    setSearchValue(v);
-
-    window.clearTimeout(typeTimer.current);
-    typeTimer.current = window.setTimeout(() => {
-      const q = (v || "").trim();
+  // PATCH: live-search on Home -> automatically go to /games while typing
+  useEffect(() => {
+    const q = (searchValue || "").trim();
+    const t = setTimeout(() => {
       if (q.length > 0) {
         nav(`/games?search=${encodeURIComponent(q)}`, { replace: true });
       }
     }, 250);
-  };
+    return () => clearTimeout(t);
+  }, [searchValue, nav]);
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -89,7 +208,7 @@ function HomePage({ searchValue, setSearchValue }) {
 
   return (
     <div className="app">
-      <Header value={searchValue} onChange={onType} onSubmit={onSubmit} />
+      <Header value={searchValue} onChange={setSearchValue} onSubmit={onSubmit} />
 
       <div className="container">
         <div className="welcomeCard">
@@ -104,8 +223,9 @@ function HomePage({ searchValue, setSearchValue }) {
             src="https://p325k7wa.twic.pics/high/elden-ring/elden-ring/08-shadow-of-the-erdtree/elden-ring-expansion-SOTE/00-page-content/ERSOTE-header-mobile.jpg?twic=v1/resize=760/step=10/quality=80"
           />
 
-          <div className="welcomeSpace">
-            <div className="spaceHint">CV content coming here…</div>
+          {/* PATCH: CV added below, everything else unchanged */}
+          <div className="cvWrap">
+            <CVBlock />
           </div>
         </div>
       </div>
@@ -116,19 +236,33 @@ function HomePage({ searchValue, setSearchValue }) {
 function GamesPage({ searchValue, setSearchValue }) {
   const q = useQuery();
   const nav = useNavigate();
-  const typeTimer = useRef(null);
 
   const [count, setCount] = useState(0);
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // ✅ Sync input from URL so refresh/back works
+  // Sync input from URL (refresh/back works)
   useEffect(() => {
     const fromUrl = q.get("search") || "";
-    setSearchValue(fromUrl);
+    if (fromUrl !== searchValue) setSearchValue(fromUrl);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [q.toString()]);
 
+  // PATCH: live-search on Games page (update URL while typing)
+  useEffect(() => {
+    const term = (searchValue || "").trim();
+    const current = (q.get("search") || "").trim();
+
+    const t = setTimeout(() => {
+      if (term === current) return;
+      nav(term ? `/games?search=${encodeURIComponent(term)}` : "/games", { replace: true });
+    }, 250);
+
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchValue]);
+
+  // Fetch when URL changes
   useEffect(() => {
     const fetchGames = async () => {
       const term = (q.get("search") || "").trim();
@@ -154,17 +288,7 @@ function GamesPage({ searchValue, setSearchValue }) {
     fetchGames();
   }, [q]);
 
-  // ✅ LIVE SEARCH: update URL while typing (debounced)
-  const onType = (v) => {
-    setSearchValue(v);
-
-    window.clearTimeout(typeTimer.current);
-    typeTimer.current = window.setTimeout(() => {
-      const term = (v || "").trim();
-      nav(term ? `/games?search=${encodeURIComponent(term)}` : "/games", { replace: true });
-    }, 250);
-  };
-
+  // Enter still works (same behavior)
   const onSubmit = (e) => {
     e.preventDefault();
     const term = (searchValue || "").trim();
@@ -173,7 +297,7 @@ function GamesPage({ searchValue, setSearchValue }) {
 
   return (
     <div className="app">
-      <Header value={searchValue} onChange={onType} onSubmit={onSubmit} />
+      <Header value={searchValue} onChange={setSearchValue} onSubmit={onSubmit} />
 
       <div className="container">
         <div className="results">Results found: {loading ? "…" : count}</div>
@@ -207,9 +331,7 @@ function GamesPage({ searchValue, setSearchValue }) {
           ))}
 
           {!loading && items.length === 0 && (
-            <div className="empty">
-              No games found. Try another search.
-            </div>
+            <div className="empty">No games found. Try another search.</div>
           )}
         </div>
       </div>

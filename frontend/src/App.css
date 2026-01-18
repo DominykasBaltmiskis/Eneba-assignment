@@ -127,23 +127,6 @@ body {
 .iconBtn:hover {
   background: rgba(255,255,255,0.12);
 }
-/* ✅ SEARCH FIX: clickable magnifier submit button */
-.searchSubmit {
-  border: 0;
-  background: transparent;
-  color: white;
-  cursor: pointer;
-  font-size: 16px;
-  opacity: 0.9;
-  padding: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.searchSubmit:hover {
-  opacity: 1;
-}
 
 .container {
   width: min(1200px, calc(100% - 44px));
@@ -288,14 +271,92 @@ body {
   border: 1px solid rgba(255,255,255,0.12);
 }
 
-.welcomeSpace {
+/* ===== PATCH: CV styling (only adds, does not change existing) ===== */
+
+.cvWrap {
   margin-top: 18px;
-  padding: 18px;
-  border-radius: 14px;
-  background: rgba(255,255,255,0.06);
-  border: 1px dashed rgba(255,255,255,0.18);
+  text-align: left;
 }
 
-.spaceHint {
+.cvCard {
+  padding: 18px;
+  border-radius: 18px;
+
+  background: rgba(30, 18, 70, 0.30);
+  border: 1px solid rgba(255,255,255,0.12);
+  backdrop-filter: blur(10px);
+
+  box-shadow: 0 18px 50px rgba(0,0,0,0.35);
+}
+
+.cvTop {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.10);
+  margin-bottom: 14px;
+}
+
+.cvName {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+}
+
+.cvContact {
+  margin-top: 4px;
+  opacity: 0.9;
+  font-size: 13px;
+}
+
+.cvSection {
+  margin-top: 14px;
+}
+
+.cvH {
+  font-weight: 800;
+  opacity: 0.95;
+  margin-bottom: 10px;
+}
+
+.cvItem {
+  padding: 12px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
+  margin-bottom: 10px;
+}
+
+.cvItemTop {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: baseline;
+}
+
+.cvRole {
+  font-weight: 800;
+}
+
+.cvPeriod {
   opacity: 0.85;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.cvSub {
+  margin-top: 6px;
+  opacity: 0.9;
+  font-size: 13px;
+}
+
+.cvList {
+  margin: 8px 0 0;
+  padding-left: 18px;
+  opacity: 0.95;
+}
+
+.cvList li {
+  margin: 4px 0;
 }
